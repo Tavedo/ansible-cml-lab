@@ -1,0 +1,53 @@
+---
+- name: Configure SSH and Security on All Devices
+  hosts: all
+  gather_facts: no
+
+  tasks:
+    - name: Check SSH Connectivity
+      wait_for:
+        host: "{{ ansible_host }}"
+        port: 22
+        timeout: 10
+      delegate_to: localhost
+      register: ssh_check
+      ignore_errors: yes
+
+    - name: Fail if SSH is not reachable
+      fail:
+        msg: "SSH is not reachable on {{ inventory_hostname }}"
+      when: ssh_check.failed
+
+    - name: Set hostname
+      cisco.ios.ios_config:
+        lines:
+          - hostname {{ inventory_hostname }}
+
+    - name: Configure domain and crypto key
+      cisco.ios.ios_config:
+        lines:
+          - ip domain name lab.local
+          - crypto key generate rsa modulus 2048
+      ignore_errors: yes  # Key might already exist
+
+    - name: Set enable secret and user
+      cisco.ios.ios_config:
+        lines:
+          - enable secret {{ ansible_become_password }}
+          - username {{ ansible_user }} privilege 15 secret {{ ansible_password }}
+
+    - name: Enable SSH version 2
+      cisco.ios.ios_config:
+        lines:
+          - ip ssh version 2
+
+    - name: Configure VTY lines
+      cisco.ios.ios_config:
+        lines:
+          - login local
+          - transport input ssh
+        parents: line vty 0 4
+
+    - name: Save configuration
+      cisco.ios.ios_config:
+        save_when: always

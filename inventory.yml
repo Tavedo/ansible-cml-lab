@@ -1,0 +1,38 @@
+---
+all:
+  children:
+    routers:
+      hosts:
+        R1:
+          ansible_host: 192.168.255.101
+        R2:
+          ansible_host: 192.168.255.102
+        R3:
+          ansible_host: 192.168.255.103
+      vars:
+        ansible_network_os: cisco.ios.ios
+        ansible_connection: ansible.netcommon.network_cli
+        ansible_user: cisco
+        ansible_password: 
+        ansible_become: yes
+        ansible_become_method: enable
+        ansible_become_password: 
+
+    switches:
+      hosts:
+        S2:
+          ansible_host: 192.168.250.2
+        S3:
+          ansible_host: 192.168.250.3
+        S4:
+          ansible_host: 192.168.250.4
+        S5:
+          ansible_host: 192.168.250.5
+      vars:
+        ansible_network_os: cisco.ios.ios
+        ansible_connection: ansible.netcommon.network_cli
+        ansible_user: cisco
+        ansible_password: 
+        ansible_become: yes
+        ansible_become_method: enable
+        ansible_become_password: 

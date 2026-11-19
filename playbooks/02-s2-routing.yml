@@ -1,0 +1,33 @@
+---
+- name: Configure S2 as Layer 3 Switch
+  hosts: S2
+  tasks:
+    - name: Configure SVI for VLAN 10
+      cisco.ios.ios_l3_interfaces:
+        config:
+          - name: Vlan10
+            ipv4:
+              - address: 192.168.10.1/24
+          - name: Vlan20
+            ipv4:
+              - address: 192.168.20.1/24
+          - name: Vlan100
+            ipv4:
+              - address: 192.168.250.2/24
+        state: merged
+
+    - name: Enable IP routing
+      cisco.ios.ios_config:
+        lines:
+          - ip routing
+
+    - name: Set default route to R1
+      cisco.ios.ios_static_routes:
+        config:
+          - address_families:
+              - afi: ipv4
+                routes:
+                  - dest: 0.0.0.0/0
+                    next_hops:
+                      - forward_router_address: 192.168.250.1
+

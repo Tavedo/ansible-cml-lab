@@ -1,0 +1,39 @@
+---
+- name: Configure EtherChannel between S2 and S3
+  hosts: S2,S3
+  tasks:
+    - name: Configure member ports for Po3
+      cisco.ios.ios_l2_interfaces:
+        config:
+          - name: Ethernet1/0
+            mode: trunk
+          - name: Ethernet1/1
+            mode: trunk
+          - name: Ethernet1/2
+            mode: trunk
+          - name: Ethernet0/3
+            mode: trunk
+        state: merged
+
+    - name: Add ports to channel-group 3
+      cisco.ios.ios_lag_interfaces:
+        config:
+          - name: Port-channel3
+            members:
+              - member: "{{ item }}"
+                mode: "{{ 'passive' if inventory_hostname == 'S2' else 'active' }}"
+        state: merged
+      loop:
+        - Ethernet1/0
+        - Ethernet1/1
+        - Ethernet1/2
+        - Ethernet0/3
+
+    - name: Configure Port-Channel 3 as trunk
+      cisco.ios.ios_l2_interfaces:
+        config:
+          - name: Port-channel3
+            mode: trunk
+            trunk:
+              allowed_vlans: 10,20,100
+

@@ -1,0 +1,31 @@
+---
+- name: Configure R1 as Router-on-a-Stick
+  hosts: R1
+  tasks:
+    - name: Ensure physical interface is up
+      cisco.ios.ios_interfaces:
+        config:
+          - name: Ethernet0/1
+            enabled: true
+        state: merged
+
+    - name: Configure sub-interface e0/1.100 for VLAN 100
+      cisco.ios.ios_config:
+        lines:
+          - encapsulation dot1q 100
+          - ip address 192.168.250.1 255.255.255.0
+          - no shutdown
+        parents: interface e0/1.100
+    - name: Add static routes for PC VLANs
+      cisco.ios.ios_static_routes:
+        config:
+          - address_families:
+              - afi: ipv4
+                routes:
+                  - dest: 192.168.10.0/24
+                    next_hops:
+                      - forward_router_address: 192.168.250.2
+                  - dest: 192.168.20.0/24
+                    next_hops:
+                      - forward_router_address: 192.168.250.2
+

@@ -1,0 +1,29 @@
+---
+- name: Configure Access Ports on S4 and S5
+  hosts: S4,S5
+  gather_facts: no
+
+  tasks:
+    - name: Configure Ethernet0/2 as access port (VLAN 10)
+      cisco.ios.ios_config:
+        lines:
+          - switchport mode access
+          - switchport access vlan 10
+          - spanning-tree portfast
+          - spanning-tree bpduguard enable
+          - no shutdown
+        parents: interface Ethernet0/2
+
+    - name: Configure Ethernet0/3 as access port (VLAN 20)
+      cisco.ios.ios_config:
+        lines:
+          - switchport mode access
+          - switchport access vlan 20
+          - spanning-tree portfast
+          - spanning-tree bpduguard enable
+          - no shutdown
+        parents: interface Ethernet0/3
+
+    - name: Save configuration
+      cisco.ios.ios_config:
+        save_when: always

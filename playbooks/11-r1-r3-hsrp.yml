@@ -1,0 +1,26 @@
+---
+- name: Configure R1 and R3 with HSRP
+  hosts: R1,R3
+  tasks:
+    - name: Ensure physical interface is up
+      cisco.ios.ios_interfaces:
+        config:
+          - name: Ethernet0/1
+            enabled: true
+        state: merged
+
+    - name: Configure sub-interface for VLAN 100
+      cisco.ios.ios_config:
+        lines:
+          - encapsulation dot1q 100
+          - ip address {{ '192.168.250.11' if inventory_hostname == 'R1' else '192.168.250.13' }} 255.255.255.0
+          - no shutdown
+        parents: interface Ethernet0/1.100
+
+    - name: Configure HSRP for redundancy
+      cisco.ios.ios_config:
+        lines:
+          - standby 1 ip 192.168.250.1
+          - standby 1 priority {{ 100 if inventory_hostname == 'R1' else 90 }}
+          - standby 1 preempt
+        parents: interface Ethernet0/1.100

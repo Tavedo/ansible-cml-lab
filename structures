@@ -1,0 +1,13 @@
+~/ansible-cml-lab/
+├── ansible.cfg
+├── inventory.yml
+├── run-all-playbooks.sh
+├── validation-commands.txt
+└── playbooks/
+    ├── 00-ssh-setup.yml
+    ├── 01-vlans-trunks.yml
+    ├── 02-s2-routing.yml
+    ├── 03-etherchannel.yml
+    ├── 04-access-ports.yml
+    ├── 10-r1-router.yml
+    └── 11-r2-r3-hsrp.yml

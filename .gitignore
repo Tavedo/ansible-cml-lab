@@ -1,5 +1,12 @@
+@"
 *.retry
 *.log
 __pycache__/
 .vault_pass
+*.key
+*.pem
 *.swp
+Thumbs.db
+desktop.ini
+.DS_Store
+"@ | Set-Content -Encoding ascii .gitignoregroup_vars/all.yml

@@ -1,0 +1,37 @@
+---
+- name: Configure VLANs and Trunk Ports on Switches
+  hosts: S2,S3,S4,S5
+  gather_facts: no
+
+  tasks:
+    - name: Create VLANs 10, 20, 100
+      cisco.ios.ios_config:
+        lines:
+          - vlan 10
+          - name USERS
+          - vlan 20
+          - name VOICE
+          - vlan 100
+          - name MANAGEMENT
+
+    - name: Configure trunk on Ethernet0/0 (S4 and S5 uplink to S2)
+      cisco.ios.ios_config:
+        lines:
+          - switchport trunk encapsulation dot1q
+          - switchport mode trunk
+          - switchport trunk allowed vlan 10,20,100
+        parents: interface Ethernet0/0
+      when: inventory_hostname in ['S4', 'S5']
+
+    - name: Configure trunk on Ethernet0/1 (S2 and S3 interconnect)
+      cisco.ios.ios_config:
+        lines:
+          - switchport trunk encapsulation dot1q
+          - switchport mode trunk
+          - switchport trunk allowed vlan 10,20,100
+        parents: interface Ethernet0/1
+      when: inventory_hostname in ['S2', 'S3']
+
+    - name: Save configuration
+      cisco.ios.ios_config:
+        save_when: always

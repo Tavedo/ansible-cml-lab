@@ -1,0 +1,23 @@
+# Step 1: Verify Ansible connectivity
+ansible all -i inventory.yml -m ping
+
+# Step 2: Enable SSH and security (if not already configured)
+ansible-playbook -i inventory.yml playbooks/00-ssh-setup.yml
+
+# Step 3: Configure VLANs and trunks on all switches
+ansible-playbook -i inventory.yml playbooks/01-vlans-trunks.yml
+
+# Step 4: Configure S2 as Layer 3 switch with SVIs
+ansible-playbook -i inventory.yml playbooks/02-s2-routing.yml
+
+# Step 5: Configure EtherChannel between S2 and S3
+ansible-playbook -i inventory.yml playbooks/03-etherchannel.yml
+
+# Step 6: Configure access ports on S4 and S5
+ansible-playbook -i inventory.yml playbooks/04-access-ports.yml
+
+# Step 7: Configure R1 as router-on-a-stick
+ansible-playbook -i inventory.yml playbooks/10-r1-router.yml
+
+# Step 8: Configure HSRP on R2 and R3
+ansible-playbook -i inventory.yml playbooks/11-r2-r3-hsrp.yml

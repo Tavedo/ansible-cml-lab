@@ -1,0 +1,180 @@
+# ANSIBLELAB - Validation Commands
+# Use these commands to verify your network configuration after running playbooks
+
+================================================================================
+STEP 1: Test Ansible Connectivity
+================================================================================
+ansible all -i inventory.yml -m ping
+
+Expected: All devices return "pong"
+
+
+================================================================================
+STEP 2: Verify VLAN Configuration on Switches
+================================================================================
+# On S2, S3, S4, S5:
+show vlan brief
+
+Expected VLANs:
+- VLAN 10: USERS
+- VLAN 20: VOICE
+- VLAN 100: MANAGEMENT
+
+
+================================================================================
+STEP 3: Verify Trunk Ports
+================================================================================
+# On S2:
+show interfaces trunk
+
+# On S3:
+show interfaces trunk
+
+# On S4, S5:
+show interfaces Ethernet0/0 switchport
+
+Expected: Trunks allow VLANs 10, 20, 100
+
+
+================================================================================
+STEP 4: Verify S2 Layer 3 Configuration
+================================================================================
+# On S2:
+show ip interface brief
+show ip route
+
+Expected:
+- Vlan10: 192.168.10.1
+- Vlan20: 192.168.20.1
+- Vlan100: 192.168.250.2
+- Default route to 192.168.250.1
+
+
+================================================================================
+STEP 5: Verify EtherChannel
+================================================================================
+# On S2:
+show etherchannel summary
+show interfaces Port-channel3
+
+# On S3:
+show etherchannel summary
+show interfaces Port-channel3
+
+Expected: Po3 is UP, using LACP
+
+
+================================================================================
+STEP 6: Verify Access Ports on S4 and S5
+================================================================================
+# On S4:
+show interfaces Ethernet0/2 switchport
+show interfaces Ethernet0/3 switchport
+show spanning-tree interface Ethernet0/2 detail
+
+# On S5:
+show interfaces Ethernet0/2 switchport
+show interfaces Ethernet0/3 switchport
+
+Expected:
+- E0/2 in VLAN 10 (access mode)
+- E0/3 in VLAN 20 (access mode)
+- PortFast and BPDU Guard enabled
+
+
+================================================================================
+STEP 7: Verify R1 Configuration
+================================================================================
+# On R1:
+show ip interface brief
+show ip route
+show standby brief
+
+Expected:
+- Ethernet0/1.100: 192.168.250.11
+- HSRP virtual IP: 192.168.250.1
+- HSRP state: Active (priority 110)
+- Static routes to 192.168.10.0/24 and 192.168.20.0/24
+
+
+================================================================================
+STEP 8: Verify R2 and R3 HSRP Configuration
+================================================================================
+# On R2:
+show ip interface brief
+show standby brief
+
+Expected:
+- Ethernet0/1.100: 192.168.250.12
+- HSRP state: Standby (priority 100)
+
+# On R3:
+show ip interface brief
+show standby brief
+
+Expected:
+- Ethernet0/1.100: 192.168.250.13
+- HSRP state: Listen (priority 90)
+
+
+================================================================================
+STEP 9: Test End-to-End Connectivity
+================================================================================
+# From PC-1 (should be in VLAN 10):
+ping 192.168.10.1      # Gateway (S2)
+ping 192.168.20.1      # VLAN 20 gateway
+ping 192.168.250.1     # HSRP virtual IP
+
+# From PC-3 (should be in VLAN 20):
+ping 192.168.20.1      # Gateway (S2)
+ping 192.168.10.1      # VLAN 10 gateway
+
+
+================================================================================
+STEP 10: Test HSRP Failover
+================================================================================
+# Shutdown R1's sub-interface and verify R2 becomes active:
+
+On R1:
+interface Ethernet0/1.100
+shutdown
+
+On R2:
+show standby brief
+# Expected: R2 should now be Active
+
+# Re-enable R1:
+On R1:
+interface Ethernet0/1.100
+no shutdown
+
+# Expected: R1 should preempt and become Active again
+
+
+================================================================================
+TROUBLESHOOTING TIPS
+================================================================================
+
+If devices are not reachable:
+1. Verify IP addresses: show ip interface brief
+2. Check SSH: show ip ssh
+3. Verify credentials: username cisco privilege 15
+
+If VLANs are missing:
+1. show vlan brief
+2. Re-run playbook: ansible-playbook -i inventory.yml playbooks/01-vlans-trunks.yml
+
+If trunks are not working:
+1. show interfaces trunk
+2. show interfaces [interface] switchport
+3. Verify encapsulation: switchport trunk encapsulation dot1q
+
+If HSRP is not working:
+1. show standby brief
+2. show standby
+3. Verify all routers have the same group number and virtual IP
+
+If routing is not working:
+1. show ip route
+2. ping [destination]
+3. traceroute [destination]
