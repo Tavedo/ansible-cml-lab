@@ -2,94 +2,94 @@
 #ANSIBLE-AUTOMATION
 
 Network Automation Tree
-│
-├── Management VLAN (VLAN 100)
-│   ├── Subnet: 192.168.250.0/24
-│   ├── S2: 192.168.250.2
-│   ├── S3: 192.168.250.3
-│   ├── S4: 192.168.250.4
-│   └── S5: 192.168.250.5
-│
-├── Data VLANs
-│   ├── VLAN 10 - Users
-│   │   └── SVI IP: 192.168.10.1 (on S2)
-│   └── VLAN 20 - Voice
-│       └── SVI IP: 192.168.20.1 (on S2)
-│
-├── Layer 3 Configuration
-│   ├── S2: ip routing enabled
-│   ├── Default route on all switches → 192.168.250.1 (R1)
-│   └── R1: Static routes for 192.168.10.0/24 and 192.168.20.0/24 → 192.168.250.2
-│
-├── Inter-Switch Links
-│   ├── EtherChannel (Po3) between S2 and S3
-│   │   └── LACP: S2 (passive), S3 (active)
-│   ├── S4 and S5 → S2 via trunk (e0/0)
-│   └── Trunks allow VLANs 10, 20, 100
-│
-├── Router-on-a-Stick (R1)
-│   └── Sub-interface: e0/1.100 → 192.168.250.1
-│
-├── Access Ports
-│   ├── S4: e0/2 → VLAN 10, e0/3 → VLAN 20
-│   └── S5: e0/2 → VLAN 10, e0/3 → VLAN 20
-│   └── PortFast + BPDU Guard enabled
-│
-├── Ubuntu-Ansible
-│   └── IP: 192.168.255.81
-│   └── Routes:
-│       ├── 192.168.250.0/24 via 192.168.255.101
-│       └── default via 192.168.255.101
-│
-└── Security & Best Practices
-    ├── SSHv2 enabled
-    ├── Passwords set to cisco
-    ├── No DTP on access ports (implied)
-    └── Trunk pruning applied   
+???
+????????? Management VLAN (VLAN 100)
+???   ????????? Subnet: 192.168.250.0/24
+???   ????????? S2: 192.168.250.2
+???   ????????? S3: 192.168.250.3
+???   ????????? S4: 192.168.250.4
+???   ????????? S5: 192.168.250.5
+???
+????????? Data VLANs
+???   ????????? VLAN 10 - Users
+???   ???   ????????? SVI IP: 192.168.10.1 (on S2)
+???   ????????? VLAN 20 - Voice
+???       ????????? SVI IP: 192.168.20.1 (on S2)
+???
+????????? Layer 3 Configuration
+???   ????????? S2: ip routing enabled
+???   ????????? Default route on all switches ??? 192.168.250.1 (R1)
+???   ????????? R1: Static routes for 192.168.10.0/24 and 192.168.20.0/24 ??? 192.168.250.2
+???
+????????? Inter-Switch Links
+???   ????????? EtherChannel (Po3) between S2 and S3
+???   ???   ????????? LACP: S2 (passive), S3 (active)
+???   ????????? S4 and S5 ??? S2 via trunk (e0/0)
+???   ????????? Trunks allow VLANs 10, 20, 100
+???
+????????? Router-on-a-Stick (R1)
+???   ????????? Sub-interface: e0/1.100 ??? 192.168.250.1
+???
+????????? Access Ports
+???   ????????? S4: e0/2 ??? VLAN 10, e0/3 ??? VLAN 20
+???   ????????? S5: e0/2 ??? VLAN 10, e0/3 ??? VLAN 20
+???   ????????? PortFast + BPDU Guard enabled
+???
+????????? Ubuntu-Ansible
+???   ????????? IP: 192.168.255.81
+???   ????????? Routes:
+???       ????????? 192.168.250.0/24 via 192.168.255.101
+???       ????????? default via 192.168.255.101
+???
+????????? Security & Best Practices
+    ????????? SSHv2 enabled
+    ????????? Passwords set to cisco
+    ????????? No DTP on access ports (implied)
+    ????????? Trunk pruning applied   
 
 
 
-✅ Step 1: Set Up Ansible Control Node (Ubuntu)
-✅ Step 2: Create Project Structure
-✅ Step 3: Define Inventory (inventory.yml)
-✅ Step 4: Test Connectivity
-✅ Step 5: Create Playbook – Enable SSH & Security (playbooks/00-ssh-setup.yml)
-✅ Step 6: Create Playbook – VLANs and Trunks (playbooks/01-vlans-trunks.yml)
-✅ Step 7: Configure S2 as Layer 3 Switch (playbooks/02-s2-routing.yml)
-✅ Step 8: Configure EtherChannel (S2 & S3) (playbooks/03-etherchannel.yml)
-✅ Step 9: Configure Access Ports (playbooks/04-access-ports.yml)
-✅ Step 10: Configure R1 (playbooks/10-r1-router.yml)
-✅ Step 11: Configure HSRP on R1, R2, R3 for VLAN 100
-✅ Step 12: Update Ansible Playbook for R2/R3 (playbooks/11-r2-r3-hsrp.yml)
-✅ Final Step: Run All Playbooks
+??? Step 1: Set Up Ansible Control Node (Ubuntu)
+??? Step 2: Create Project Structure
+??? Step 3: Define Inventory (inventory.yml)
+??? Step 4: Test Connectivity
+??? Step 5: Create Playbook ??? Enable SSH & Security (playbooks/00-ssh-setup.yml)
+??? Step 6: Create Playbook ??? VLANs and Trunks (playbooks/01-vlans-trunks.yml)
+??? Step 7: Configure S2 as Layer 3 Switch (playbooks/02-s2-routing.yml)
+??? Step 8: Configure EtherChannel (S2 & S3) (playbooks/03-etherchannel.yml)
+??? Step 9: Configure Access Ports (playbooks/04-access-ports.yml)
+??? Step 10: Configure R1 (playbooks/10-r1-router.yml)
+??? Step 11: Configure HSRP on R1, R2, R3 for VLAN 100
+??? Step 12: Update Ansible Playbook for R2/R3 (playbooks/11-r2-r3-hsrp.yml)
+??? Final Step: Run All Playbooks
 
 
 Here is the folder and file structure tree for Ansible automation project:
 ansible-cml-lab/
-│
-├── inventory.yml
-├── ansible.cfg (optional)
-│
-├── playbooks/
-│   ├── 00-ssh-setup.yml
-│   ├── 01-vlans-trunks.yml
-│   ├── 02-s2-routing.yml
-│   ├── 03-etherchannel.yml
-│   ├── 04-access-ports.yml
-│   ├── 10-r1-router.yml
-│   └── 11-r2-r3-hsrp.yml
-│
-├── group_vars/
-│   └── all.yml (optional: place common vars like credentials)
-│
-└── host_vars/
-    ├── R1.yml
-    ├── R2.yml
-    ├── R3.yml
-    ├── S2.yml
-    ├── S3.yml
-    ├── S4.yml
-    └── S5.yml
+???
+????????? inventory.yml
+????????? ansible.cfg (optional)
+???
+????????? playbooks/
+???   ????????? 00-ssh-setup.yml
+???   ????????? 01-vlans-trunks.yml
+???   ????????? 02-s2-routing.yml
+???   ????????? 03-etherchannel.yml
+???   ????????? 04-access-ports.yml
+???   ????????? 10-r1-router.yml
+???   ????????? 11-r2-r3-hsrp.yml
+???
+????????? group_vars/
+???   ????????? all.yml (optional: place common vars like credentials)
+???
+????????? host_vars/
+    ????????? R1.yml
+    ????????? R2.yml
+    ????????? R3.yml
+    ????????? S2.yml
+    ????????? S3.yml
+    ????????? S4.yml
+    ????????? S5.yml
 
 
 Step 1: Set Up Ansible Control Node (Ubuntu)
@@ -100,13 +100,13 @@ sudo apt install ansible ssh -y
 # Install Cisco IOS collection
 ansible-galaxy collection install cisco.ios
 ________________________________________
-✅ Step 2: Create Project Structure
+??? Step 2: Create Project Structure
 mkdir ansible-cml-lab
 cd ansible-cml-lab
 touch inventory.yml
 mkdir playbooks
 ________________________________________
-✅ Step 3: Define Inventory (inventory.yml)
+??? Step 3: Define Inventory (inventory.yml)
 all:
   hosts:
     R1:
@@ -127,17 +127,17 @@ all:
   vars:
     ansible_network_os: cisco.ios.ios
     ansible_user: cisco
-    ansible_password: cisco
+    ansible_password: <your_password>
     ansible_become: yes
     ansible_become_method: enable
     ansible_connection: ansible.netcommon.network_cli
 ________________________________________
-✅ Step 4: Test Connectivity
+??? Step 4: Test Connectivity
 ansible all -i inventory.yml -m ping
 You should get SUCCESS for all devices.
 ________________________________________
-✅ Step 5: Create Playbook – Enable SSH & Security (playbooks/00-ssh-setup.yml)
-Even if SSH is already on, this ensures it’s consistent:
+??? Step 5: Create Playbook ??? Enable SSH & Security (playbooks/00-ssh-setup.yml)
+Even if SSH is already on, this ensures it???s consistent:
 - name: Configure SSH and Security
   hosts: all
   tasks:
@@ -156,8 +156,8 @@ Even if SSH is already on, this ensures it’s consistent:
     - name: Set enable secret and user
       cisco.ios.ios_config:
         lines:
-          - enable secret cisco
-          - username cisco privilege 15 secret cisco
+          - enable secret <your_enable_secret>
+          - username <user> privilege 15 secret <your_password>
 
     - name: Enable SSH version 2
       cisco.ios.ios_config:
@@ -173,7 +173,7 @@ Even if SSH is already on, this ensures it’s consistent:
 Run:
 ansible-playbook -i inventory.yml playbooks/00-ssh-setup.yml
 ________________________________________
-✅ Step 6: Create Playbook – VLANs and Trunks (playbooks/01-vlans-trunks.yml)
+??? Step 6: Create Playbook ??? VLANs and Trunks (playbooks/01-vlans-trunks.yml)
 - name: Configure VLANs and Trunk Ports
   hosts: S2,S3,S4,S5
   tasks:
@@ -201,7 +201,7 @@ ________________________________________
               allowed_vlans: 10,20,100
         state: merged
 ________________________________________
-✅ Step 7: Configure S2 as Layer 3 Switch (playbooks/02-s2-routing.yml)
+??? Step 7: Configure S2 as Layer 3 Switch (playbooks/02-s2-routing.yml)
 - name: Configure S2 as Layer 3 Switch
   hosts: S2
   tasks:
@@ -236,7 +236,7 @@ ________________________________________
                     next_hops:
                       - forward_router: 192.168.250.1
 ________________________________________
-✅ Step 8: Configure EtherChannel (S2 & S3) (playbooks/03-etherchannel.yml)
+??? Step 8: Configure EtherChannel (S2 & S3) (playbooks/03-etherchannel.yml)
 - name: Configure EtherChannel between S2 and S3
   hosts: S2,S3
   tasks:
@@ -275,7 +275,7 @@ ________________________________________
             trunk:
               allowed_vlans: 10,20,100
 ________________________________________
-✅ Step 9: Configure Access Ports (playbooks/04-access-ports.yml)
+??? Step 9: Configure Access Ports (playbooks/04-access-ports.yml)
 - name: Configure Access Ports on S4 and S5
   hosts: S4,S5
   tasks:
@@ -307,7 +307,7 @@ ________________________________________
         - Ethernet0/2
         - Ethernet0/3
 ________________________________________
-✅ Step 10: Configure R1 (playbooks/10-r1-router.yml)
+??? Step 10: Configure R1 (playbooks/10-r1-router.yml)
 - name: Configure R1 as Router-on-a-Stick
   hosts: R1
   tasks:
@@ -343,7 +343,7 @@ ________________________________________
                     next_hops:
                       - forward_router: 192.168.250.2
 ________________________________________
-✅ Final Step: Run All Playbooks
+??? Final Step: Run All Playbooks
 ansible-playbook -i inventory.yml playbooks/00-ssh-setup.yml
 ansible-playbook -i inventory.yml playbooks/01-vlans-trunks.yml
 ansible-playbook -i inventory.yml playbooks/02-s2-routing.yml
@@ -353,7 +353,7 @@ ansible-playbook -i inventory.yml playbooks/10-r1-router.yml
 ________________________________________
 Now you have a fully automated Ansible-cml-Lab.
 
-✅ Step 11: Configure HSRP on R1, R2, R3 for VLAN 100
+??? Step 11: Configure HSRP on R1, R2, R3 for VLAN 100
 On R1:
 
 interface Ethernet0/1.100
@@ -377,7 +377,7 @@ interface Ethernet0/1.100
 
 This makes R1 the active gateway, R2 standby, and R3 backup.
 
-✅ Step 12: Update Ansible Playbook for R2/R3 (playbooks/11-r2-r3-hsrp.yml)
+??? Step 12: Update Ansible Playbook for R2/R3 (playbooks/11-r2-r3-hsrp.yml)
 - name: Configure R2 and R3 with HSRP
   hosts: R2,R3
   tasks:
@@ -433,4 +433,5 @@ host_vars/S3.yml
 
 device_ip: 192.168.250.3
 device_role: l3_switch
+
 
