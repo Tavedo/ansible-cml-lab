@@ -1,4 +1,4 @@
-
+﻿
 #ANSIBLE-AUTOMATION
 
 Network Automation Tree
@@ -433,5 +433,6 @@ host_vars/S3.yml
 
 device_ip: 192.168.250.3
 device_role: l3_switch
+
 
 

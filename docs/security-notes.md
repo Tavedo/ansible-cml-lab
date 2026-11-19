@@ -1,57 +1,72 @@
-Security Concerns in This Lab
-While this setup works for a lab environment, here are some security considerations to keep in mind:
+# Security Notes
 
-1. Default Credentials
-All devices use cisco/cisco — this is a well-known default.
-✅ Fix: Change to strong, unique passwords or use local user accounts with secret hashing:
-username admin secret MyStrongPass123
+This setup works for a lab, but it isn't hardened. These are the gaps and how I'd
+close them for anything real.
 
-2. Unsecured Management Access
-SSH is enabled, but:
-No login banners (missing legal notice).
-No access control on VTY lines.
-✅ Fix:
+## 1. Default credentials
+
+All devices use `cisco/cisco`, a well-known default.
+Fix: use strong, unique passwords and local accounts with secret hashing.
+```
+username admin secret <strong_password>
+```
+
+## 2. Unsecured management access
+
+SSH is on, but there are no login banners and no access control on the VTY lines.
+Fix:
+```
 banner login ^C Unauthorized Access Prohibited ^C
 line vty 0 4
- access-class 1 in  (allow only management subnet)
-
-With ACL:
+ access-class 1 in
+!
 access-list 1 permit 192.168.255.0 0.0.0.255
+```
 
-3. Open Trunks and VLAN Hopping
-Trunk ports allow all VLANs (1-4094) or multiple VLANs without pruning.
-Risk of VLAN hopping if an attacker gains access to a trunk port.
-✅ Fix:
-Only allow necessary VLANs:
+## 3. Open trunks / VLAN hopping
+
+Trunks that allow all VLANs are a VLAN-hopping risk if someone reaches a trunk port.
+Fix: allow only the VLANs that are needed, and disable DTP on access ports.
+```
 switchport trunk allowed vlan 10,20,100
-
-Disable DTP on access ports:
 switchport nonegotiate
+```
 
-4. Port Security (Missing on Access Ports)
-PC ports have no protection against unauthorized devices.
-✅ Fix:
+## 4. No port security on access ports
+
+Nothing stops an unauthorized device plugging into an access port.
+Fix:
+```
 interface e0/2
  switchport port-security
  switchport port-security maximum 1
  switchport port-security mac-address sticky
+```
 
-5. BPDU Guard Not Enabled
-STP can be exploited if a rogue switch is connected.
-✅ Fix: Enable BPDU Guard on all access ports:
+## 5. BPDU Guard not enabled
+
+A rogue switch could influence spanning tree.
+Fix, on access ports:
+```
 spanning-tree portfast
 spanning-tree bpduguard enable
+```
 
-6. ICMP and Debugging Enabled
-While useful for troubleshooting, excessive ICMP or CDP can aid reconnaissance.
-✅ Fix: Limit ICMP if not needed, or filter at edge.
-7. No Logging or Monitoring
-No centralized logging; all logs are local.
-✅ Fix: Set up syslog:
+## 6. ICMP and CDP
+
+Excessive ICMP or CDP can help reconnaissance.
+Fix: limit ICMP where it isn't needed, or filter it at the edge.
+
+## 7. No logging or monitoring
+
+Logs are local only, with no central collection.
+Fix:
+```
 logging 192.168.255.81
 logging trap informational
+```
 
-Summary
-For a production network, these would be critical fixes. In a lab, they're still good practice to reinforce secure configuration habits.
+## Summary
 
-You now have full connectivity.
+For production these would be required fixes. In the lab they're still good habits
+to practice.
